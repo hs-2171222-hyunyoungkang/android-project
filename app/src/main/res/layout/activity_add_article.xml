@@ -47,6 +47,18 @@
         app:layout_constraintTop_toBottomOf="@id/toolbarUnderLineView" />
 
     <EditText
+        android:id="@+id/bodyEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:inputType="text"
+        android:hint="내용"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/priceEditText" />
+
+    <EditText
         android:id="@+id/priceEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -62,6 +74,7 @@
         android:id="@+id/imageAddButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:backgroundTint="@color/orange"
         android:text="@string/submit_image"
         app:layout_constraintEnd_toEndOf="@id/photoImageView"
@@ -74,8 +87,10 @@
         android:layout_height="250dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.636" />
 
     <Button
         android:id="@+id/submitButton"
