@@ -19,8 +19,6 @@ import com.google.firebase.ktx.Firebase
 import com.example.project.DBKey.Companion.CHILD_CHAT
 import com.example.project.DBKey.Companion.DB_ARTICLES
 import com.example.project.DBKey.Companion.DB_USERS
-import com.example.project.R
-import com.example.project.ChatListItem
 import com.example.project.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
@@ -76,6 +74,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         // 데이터 가져오기;
         initListener()
+
+        setArticleSample()
     }
 
     private fun initListener() {
@@ -171,10 +171,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun setArticleSample() {
-        articleAdapter.submitList(mutableListOf<ArticleModel>().apply {
-            add(ArticleModel("0", "AAA", 1000000, "5000원", ""))
-            add(ArticleModel("0", "BBB", 2000000, "10000원", ""))
-        })
+        val sampleData = mutableListOf<ArticleModel>().apply {
+            add(ArticleModel("0", "사과", "10000원", "판매중", ""))
+            add(ArticleModel("0", "운동화", "20000원", "판매중", ""))
+            add(ArticleModel("0", "텀블러", "5000원", "판매완료", ""))
+        }
+        articleAdapter.submitList(sampleData)
     }
 
 }
