@@ -1,8 +1,5 @@
 package com.example.project
 
-import android.app.Activity
-import android.app.AlertDialog
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -20,7 +17,6 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import com.example.project.DBKey.Companion.DB_ARTICLES
-import com.example.project.R
 
 class AddArticleActivity : AppCompatActivity() {
 
@@ -66,31 +62,33 @@ class AddArticleActivity : AppCompatActivity() {
             showProgress()
             // 입력된 값 가져오기;
             val title = findViewById<EditText>(R.id.titleEditText).text.toString()
+            val body = findViewById<EditText>(R.id.bodyEditText).text.toString()
             val price = findViewById<EditText>(R.id.priceEditText).text.toString()
             val sellerId = auth.currentUser?.uid.orEmpty()
+            val sell = "판매중"
 
             // 중간에 이미지가 있으면 업로드 과정을 추가
             if (selectedUri != null) {
                 val photoUri = selectedUri ?: return@setOnClickListener
-                uploadPhoto(photoUri,
+                uploadPhoto(
+                    photoUri,
                     successHandler = { url -> // 다운로드 url 을 받아서 처리;
-                        uploadArticle(sellerId, title, price, url)
+                        uploadArticle(sellerId, title, price, sell, url)
+                        hideProgress()
                     },
                     errorHandler = {
-                        Toast.makeText(this, "사진 업로드 실패.", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(this, "사진 업로드 실패.", Toast.LENGTH_SHORT).show()
                         hideProgress()
-                    })
+                    }
+                )
             } else {
                 // 이미지가 없는 경우 빈 문자열
-                uploadArticle(sellerId, title, price, "")
+                uploadArticle(sellerId, title, body, price, "")
                 hideProgress()
             }
-
-            // 모델 생성;
-
         }
     }
+
 
     private fun initImageAddButton() {
         findViewById<Button>(R.id.imageAddButton).setOnClickListener {
@@ -100,10 +98,6 @@ class AddArticleActivity : AppCompatActivity() {
                     android.Manifest.permission.READ_EXTERNAL_STORAGE
                 ) == PackageManager.PERMISSION_GRANTED -> { // 권한을 가지고 있는 경우;
                     startContentProvider()
-                }
-                shouldShowRequestPermissionRationale(android.Manifest.permission.READ_EXTERNAL_STORAGE) -> {
-                    // 교육이 필요한 경우;
-                    showPermissionContextPop()
                 }
                 else -> {
                     // 권한 요청;
@@ -137,8 +131,8 @@ class AddArticleActivity : AppCompatActivity() {
             }
     }
 
-    private fun uploadArticle(sellerId: String, title: String, price: String, imageUrl: String) {
-        val model = ArticleModel(sellerId, title, System.currentTimeMillis(), "${price}원", imageUrl)
+    private fun uploadArticle(sellerId: String, title: String, body: String, price: String, imageUrl: String) {
+        val model = ArticleModel(sellerId, title, price, "판매중", imageUrl)
 
         // 데이터베이스에 업로드;
         articleDB.push().setValue(model)
@@ -146,6 +140,7 @@ class AddArticleActivity : AppCompatActivity() {
         hideProgress()
         finish()
     }
+
 
     // 권힌 요청 결과 확인;
     override fun onRequestPermissionsResult(
@@ -169,14 +164,6 @@ class AddArticleActivity : AppCompatActivity() {
     }
 
     private fun startContentProvider() {
-        // 이미지 SAF 기능 실행; 이미지 가져오기;
-
-        // old ver.
-        //val intent = Intent(Intent.ACTION_GET_CONTENT)
-        //intent.type = "image/*"
-        // startActivityForResult(intent, 2020) // deprecated
-
-        // new ver.
         getContent.launch("image/*")
     }
 
@@ -187,45 +174,6 @@ class AddArticleActivity : AppCompatActivity() {
 
     private fun hideProgress() {
         findViewById<ProgressBar>(R.id.progressBar).isVisible = false
-    }
-
-
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//
-//        if (resultCode != Activity.RESULT_OK) {
-//
-//        }
-//
-//        when (requestCode) {
-//            2020 -> {
-//                val uri = data?.data
-//                if (uri != null) {
-//                    // 사진을 정상적으로 가져온 경우;
-//                    findViewById<ImageView>(R.id.photoImageView).setImageURI(uri)
-//                    selectedUri = uri
-//                } else {
-//                    Toast.makeText(this, " 사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT)
-//                        .show()
-//                }
-//            }
-//            else -> {
-//                Toast.makeText(this, " 사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT)
-//                    .show()
-//            }
-//        }
-//    }
-
-    // 교육용 팝업 띄우기;
-    private fun showPermissionContextPop() {
-        AlertDialog.Builder(this)
-            .setTitle("권한이 필요합니다.")
-            .setMessage("사진을 가져오기 위해 필요합니다.")
-            .setPositiveButton("동의") { _, _ ->
-                requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 1010)
-            }
-            .create()
-            .show()
     }
 
 }
